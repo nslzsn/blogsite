@@ -24,10 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^91&pasrwsvd0_0tb$x19#(y65(5pe0fi1au*kb1tzwf((+j6p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -39,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "post",
+    'widget_tweaks',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Hata sayfası yönlendirmeleri
+HANDLER400 = 'home.views.custom_bad_request_view'
+HANDLER403 = 'home.views.custom_permission_denied_view'
+HANDLER404 = 'home.views.custom_page_not_found_view'
+HANDLER500 = 'home.views.custom_error_view'
