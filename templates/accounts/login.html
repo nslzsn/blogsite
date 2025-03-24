@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+<h2>Giriş Yap</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Giriş Yap</button>
+</form>
+<a href="{% url 'accounts:register' %}">Hesabın yok mu? Kayıt ol</a>
+{% endblock %}

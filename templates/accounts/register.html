@@ -1,0 +1,11 @@
+
+{% extends 'base.html' %}
+{% block body %}
+<h2>Kayıt Ol</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Kayıt Ol</button>
+</form>
+<a href="{% url 'accounts:login' %}">Zaten hesabın var mı? Giriş yap</a>
+{% endblock %}

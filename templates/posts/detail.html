@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="bg-white p-6 rounded shadow-md">
+    <h1 class="text-3xl font-bold mb-2">{{ post.title }}</h1>
+    <p class="text-sm text-gray-500 mb-4">{{ post.publishing_date|timesince  }}</p>
+    <p class="text-lg">{{ post.content }}</p>
+</div>
+
+<div class="mt-6 flex gap-4">
+    <a href="{% url 'post:update' post.slug %}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Düzenle</a>
+    <a href="{% url 'post:delete' post.slug %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Sil</a>
+    <a href="{% url 'post:index' %}" class="text-gray-600 hover:underline">← Geri dön</a>
+</div>
+{% endblock %}

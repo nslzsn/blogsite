@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Postlar{% endblock %}
+
+{% block body %}
+<h1 class="text-3xl font-bold mb-6">Tüm Postlar</h1>
+
+<a href="{% url 'post:creat' %}" class="mb-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    + Yeni Post
+</a>
+
+<div class="space-y-6">
+    {% for post in posts %}
+        <div class="bg-white shadow-md rounded p-4">
+            <h2 class="text-xl font-semibold text-blue-600">
+                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </h2>
+
+            
+            <p class="text-sm text-gray-500">
+                {{ post.publishing_date|timesince }} önce —
+                {% if post.author %}
+                    <span class="italic">Yazar: {{ post.author.username }}</span>
+                {% else %}
+                    <span class="italic text-red-500">Yazarsız</span>
+                {% endif %}
+            </p>
+
+
+            <p class="mt-2 text-gray-700">{{ post.content|truncatewords:15 }}</p>
+
+            <div class="mt-4 flex gap-4">
+                <a href="{% url 'post:detail' post.slug %}" class="text-blue-500 hover:underline">Detay</a>
+                <a href="{% url 'post:update' post.slug%}" class="text-yellow-500 hover:underline">Düzenle</a>
+                <a href="{% url 'post:delete' post.slug %}" class="text-red-500 hover:underline">Sil</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>Hiç post yok.</p>
+    {% endfor %}
+</div>
+{% endblock %}

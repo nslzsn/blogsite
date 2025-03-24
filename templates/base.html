@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+    <title>{% block title %}gonderi paylaşımı{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <nav class="bg-white shadow mb-8">
+        <div class="max-w-5xl mx-auto px-4">
+          <div class="flex justify-between items-center py-4">
+            <a href="/" class="text-xl font-bold text-blue-600">Blog</a>
+      
+            <!-- Hamburger -->
+            <div class="md:hidden">
+              <button id="menu-btn" class="text-gray-800 focus:outline-none text-2xl">
+                ☰
+              </button>
+            </div>
+      
+            <!-- Menü (normal) -->
+            <div class="hidden md:flex space-x-4 items-center" id="menu">
+              <a href="{% url 'post:index' %}" class="text-gray-700 hover:text-blue-600">Anasayfa</a>
+              {% if user.is_authenticated %}
+                <span class="text-gray-500">{{ user.username }}</span>
+                <a href="{% url 'post:creat' %}" class="text-white bg-green-600 px-3 py-1 rounded hover:bg-green-700">+ Yeni Post</a>
+                <a href="{% url 'accounts:logout' %}" class="text-gray-700 hover:text-red-600">Çıkış Yap</a>
+              {% else %}
+                <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-blue-600">Giriş Yap</a>
+                <a href="{% url 'accounts:register' %}" class="text-gray-700 hover:text-blue-600">Kayıt Ol</a>
+              {% endif %}
+            </div>
+          </div>
+      
+          <!-- Menü (mobil) -->
+          <div class="hidden flex-col space-y-2 pb-4 md:hidden" id="mobile-menu">
+            <a href="{% url 'post:index' %}" class="text-gray-700 hover:text-blue-600 block">Anasayfa</a>
+            {% if user.is_authenticated %}
+              <span class="text-gray-500 px-2">{{ user.username }}</span>
+              <a href="{% url 'post:creat' %}" class="text-white bg-green-600 px-3 py-1 rounded hover:bg-green-700 block">+ Yeni Post</a>
+              <a href="{% url 'accounts:logout' %}" class="text-gray-700 hover:text-red-600 block">Çıkış Yap</a>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-blue-600 block">Giriş Yap</a>
+              <a href="{% url 'accounts:register' %}" class="text-gray-700 hover:text-blue-600 block">Kayıt Ol</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn = document.getElementById("menu-btn");
+      const menu = document.getElementById("mobile-menu");
+  
+      btn.addEventListener("click", function () {
+        menu.classList.toggle("hidden");
+      });
+    });
+  </script>
+
+
+
+{% if messages %}
+<div class="space-y-4 mb-6">
+  {% for message in messages %}
+    <div class="px-4 py-3 rounded shadow 
+      {% if message.tags == 'success' %}
+        bg-green-100 text-green-800
+      {% elif message.tags == 'error' %}
+        bg-red-100 text-red-800
+      {% elif message.tags == 'warning' %}
+        bg-yellow-100 text-yellow-800
+      {% else %}
+        bg-gray-100 text-gray-800
+      {% endif %}
+    ">
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block body %}
+{% endblock %}
+
+</div>
+
+</body>
+</html>
