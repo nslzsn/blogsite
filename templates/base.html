@@ -29,6 +29,7 @@
           {% if user.is_authenticated %}
             <span class="text-gray-500">{{ user.username }}</span>
             <a href="{% url 'post:creat' %}" class="text-white bg-green-500 px-3 py-1 rounded-xl hover:bg-green-600">+ Yeni Post</a>
+            <a href="{% url 'task:task_redirect' %}" class="text-gray-700 hover:text-blue-500">Görevler</a>
             <a href="{% url 'accounts:logout' %}" class="text-gray-700 hover:text-red-500">Çıkış Yap</a>
           {% else %}
             <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-orange-500">Giriş Yap</a>
@@ -43,6 +44,7 @@
         {% if user.is_authenticated %}
           <span class="text-gray-500 px-2">{{ user.username }}</span>
           <a href="{% url 'post:creat' %}" class="text-white bg-green-500 px-3 py-1 rounded-xl hover:bg-green-600 block">+ Yeni Post</a>
+          <a href="{% url 'task:task_redirect' %}" class="text-gray-700 hover:text-blue-500 block">Görevler</a>
           <a href="{% url 'accounts:logout' %}" class="text-gray-700 hover:text-red-500 block">Çıkış Yap</a>
         {% else %}
           <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-orange-500 block">Giriş Yap</a>

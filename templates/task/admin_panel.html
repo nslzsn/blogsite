@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="max-w-5xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">🛠 Görev Atama Paneli</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Kullanıcılar Listesi -->
+    <div class="bg-white shadow p-4 rounded-xl">
+      <h2 class="font-semibold text-lg mb-2">Kullanıcılar</h2>
+      <ul>
+        {% for user in users %}
+          <li class="text-sm text-gray-700">{{ user.username }} - {{ user.email }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Görevler Statüye Göre -->
+    <div class="bg-white shadow p-4 rounded-xl">
+      <h2 class="font-semibold text-lg mb-2">📌 Bekliyor</h2>
+      <ul>
+        {% for task in tasks %}
+          {% if task.status == 'pending' %}
+            <li class="border-b py-2">
+              <strong>{{ task.title }}</strong><br>
+              {{ task.description }}<br>
+              <small class="text-gray-500">
+                → {% for u in task.assigned_to.all %}
+                     {{ u.username }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </small>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+
+      <h2 class="font-semibold text-lg mt-6 mb-2">⚙️ Yapılıyor</h2>
+      <ul>
+        {% for task in tasks %}
+          {% if task.status == 'in_progress' %}
+            <li class="border-b py-2">
+              <strong>{{ task.title }}</strong><br>
+              {{ task.description }}<br>
+              <small class="text-gray-500">
+                → {% for u in task.assigned_to.all %}
+                     {{ u.username }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </small>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+
+      <h2 class="font-semibold text-lg mt-6 mb-2">✅ Tamamlandı</h2>
+      <ul>
+        {% for task in tasks %}
+          {% if task.status == 'done' %}
+            <li class="border-b py-2">
+              <strong>{{ task.title }}</strong><br>
+              {{ task.description }}<br>
+              <small class="text-gray-500">
+                → {% for u in task.assigned_to.all %}
+                     {{ u.username }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </small>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Görev Atama Formu -->
+  <div class="bg-white shadow p-4 rounded-xl mt-6">
+    <h2 class="text-lg font-semibold mb-2">📋 Yeni Görev Ata</h2>
+    <form method="POST"  enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Görevi Ata
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
