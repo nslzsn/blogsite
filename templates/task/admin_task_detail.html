@@ -47,30 +47,35 @@
   {% endif %}
 
   <!-- Yorumlar -->
-  <h2 class="text-xl font-semibold mb-2">💬 Yorumlar</h2>
-  <ul class="space-y-2 mb-6">
-    {% for comment in comments %}
-      <li class="border-b pb-2">
-        <strong>{{ comment.user.username }}</strong>:
-        {{ comment.text }}
-        <span class="text-xs text-gray-500 block">({{ comment.created_at|date:"d M Y H:i" }})</span>
-      </li>
-    {% empty %}
-      <li class="text-gray-500">Henüz yorum yapılmamış.</li>
-    {% endfor %}
-  </ul>
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold mb-2 text-green-600">🗨️ Yapılan Yorumlar</h2>
+
+    {% if comments %}
+      <ul class="space-y-4">
+        {% for comment in comments %}
+          <li class="border-b pb-2">
+            <strong>{{ comment.user.username }}</strong> dedi ki:
+            <p class="text-gray-700">{{ comment.content }}</p>
+            <small class="text-gray-400">{{ comment.created_at|date:"d M Y H:i" }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">Henüz yorum yapılmamış.</p>
+    {% endif %}
+  </div>
 
   <!-- Yorum Ekleme Formu -->
   <h3 class="text-lg font-medium mb-2">✍️ Yorum Yap</h3>
   <form method="post" class="space-y-3">
     {% csrf_token %}
-    {{comment_form.as_p}}
+    {{ form.as_p }}
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Gönder</button>
   </form>
 
   <!-- Geri Dön Linki -->
   <div class="mt-6">
-    <a href="{% url 'task:kanban_board' %}" class="text-blue-600 underline text-sm">← Görev listesine dön</a>
+    <a href="{% url 'task:admin_task_panel' %}" class="text-blue-600 underline text-sm">← Görev listesine dön</a>
   </div>
 </div>
 {% endblock %}

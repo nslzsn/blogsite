@@ -9,7 +9,7 @@ class TaskAssignForm(forms.ModelForm):
     )
     class Meta:
         model = Task
-        fields = ['title', 'description', 'assigned_to','status', 'attachment', 'tags']
+        fields = ['title', 'description', 'assigned_to','status', 'attachment', 'due_date']
 
         
 class TaskStatusForm(forms.ModelForm):

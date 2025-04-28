@@ -1,84 +1,93 @@
+
 {% extends 'base.html' %}
 {% block body %}
-<div class="max-w-5xl mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-4">🛠 Görev Atama Paneli</h1>
+{% load widget_tweaks %}
+<div class="max-w-7xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">🛠 Admin Görev Yönetimi (Kanban)</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <!-- Kullanıcılar Listesi -->
-    <div class="bg-white shadow p-4 rounded-xl">
-      <h2 class="font-semibold text-lg mb-2">Kullanıcılar</h2>
-      <ul>
-        {% for user in users %}
-          <li class="text-sm text-gray-700">{{ user.username }} - {{ user.email }}</li>
-        {% endfor %}
-      </ul>
-    </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-    <!-- Görevler Statüye Göre -->
-    <div class="bg-white shadow p-4 rounded-xl">
+    <!-- 📌 Bekliyor -->
+    <div class="bg-gray-100 p-4 rounded-xl">
       <h2 class="font-semibold text-lg mb-2">📌 Bekliyor</h2>
-      <ul>
-        {% for task in tasks %}
-          {% if task.status == 'pending' %}
-            <li class="border-b py-2">
-              <strong>{{ task.title }}</strong><br>
-              {{ task.description }}<br>
-              <small class="text-gray-500">
-                → {% for u in task.assigned_to.all %}
-                     {{ u.username }}{% if not forloop.last %}, {% endif %}
-                  {% endfor %}
-              </small>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-
-      <h2 class="font-semibold text-lg mt-6 mb-2">⚙️ Yapılıyor</h2>
-      <ul>
-        {% for task in tasks %}
-          {% if task.status == 'in_progress' %}
-            <li class="border-b py-2">
-              <strong>{{ task.title }}</strong><br>
-              {{ task.description }}<br>
-              <small class="text-gray-500">
-                → {% for u in task.assigned_to.all %}
-                     {{ u.username }}{% if not forloop.last %}, {% endif %}
-                  {% endfor %}
-              </small>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-
-      <h2 class="font-semibold text-lg mt-6 mb-2">✅ Tamamlandı</h2>
-      <ul>
-        {% for task in tasks %}
-          {% if task.status == 'done' %}
-            <li class="border-b py-2">
-              <strong>{{ task.title }}</strong><br>
-              {{ task.description }}<br>
-              <small class="text-gray-500">
-                → {% for u in task.assigned_to.all %}
-                     {{ u.username }}{% if not forloop.last %}, {% endif %}
-                  {% endfor %}
-              </small>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
+      {% for task in tasks %}
+        {% if task.status == 'pending' %}
+          <div class="bg-white p-3 rounded shadow mb-2">
+            <a href="{% url 'task:admin_task_detail' task.id %}" class="font-bold text-blue-700 hover:underline">
+              {{ task.title }}
+            </a>            
+            <p class="text-sm">{{ task.description }}</p>
+            <small class="text-gray-500">
+              Atananlar: {% for u in task.assigned_to.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </small>
+          </div>
+        {% endif %}
+      {% empty %}
+        <p class="text-sm text-gray-500">Bekleyen görev yok.</p>
+      {% endfor %}
     </div>
+
+    <!-- ⚙️ Yapılıyor -->
+    <div class="bg-gray-100 p-4 rounded-xl">
+      <h2 class="font-semibold text-lg mb-2">⚙️ Yapılıyor</h2>
+      {% for task in tasks %}
+        {% if task.status == 'in_progress' %}
+          <div class="bg-white p-3 rounded shadow mb-2">
+            <a href="{% url 'task:admin_task_detail' task.id %}" class="font-bold text-blue-700 hover:underline">
+              {{ task.title }}
+            </a>
+            <p class="text-sm">{{ task.description }}</p>
+            <small class="text-gray-500">
+              Atananlar: {% for u in task.assigned_to.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </small>
+          </div>
+        {% endif %}
+      {% empty %}
+        <p class="text-sm text-gray-500">Devam eden görev yok.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ✅ Tamamlandı -->
+    <div class="bg-gray-100 p-4 rounded-xl">
+      <h2 class="font-semibold text-lg mb-2">✅ Tamamlandı</h2>
+      {% for task in tasks %}
+        {% if task.status == 'done' %}
+          <div class="bg-white p-3 rounded shadow mb-2">
+            <a href="{% url 'task:admin_task_detail' task.id %}" class="font-bold text-blue-700 hover:underline">
+              {{ task.title }}
+            </a>
+            <p class="text-sm">{{ task.description }}</p>
+            <small class="text-gray-500">
+              Atananlar: {% for u in task.assigned_to.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </small>
+          </div>
+        {% endif %}
+      {% empty %}
+        <p class="text-sm text-gray-500">Tamamlanmış görev yok.</p>
+      {% endfor %}
+    </div>
+
   </div>
 
-  <!-- Görev Atama Formu -->
-  <div class="bg-white shadow p-4 rounded-xl mt-6">
-    <h2 class="text-lg font-semibold mb-2">📋 Yeni Görev Ata</h2>
-    <form method="POST"  enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        Görevi Ata
-      </button>
-    </form>
-  </div>
+ 
+<!-- 📝 Yeni Görev Atama Formu -->
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-lg mt-10">
+  <h2 class="text-2xl font-bold mb-6 text-green-500">Yeni Görev Ata</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% for field in form %}
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-orange-600 mb-1">{{ field.label }}</label>
+        {{ field|add_class:"w-full p-2 border border-pink-200 rounded-xl" }}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition">
+      🚀 Görevi Ata
+    </button>
+  </form>
 </div>
+
 {% endblock %}

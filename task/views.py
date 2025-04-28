@@ -1,12 +1,14 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required,user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import Task
 from django.contrib import messages
+from django.urls import reverse
 from .forms import TaskAssignForm , TaskStatusForm, CommentForm
+from django.db.models import Prefetch
 
 
-
+User = get_user_model()
 
 
 def is_admin(user):
@@ -22,7 +24,7 @@ def task_redirect_view(request):
     if request.user.is_superuser:
         return redirect('task:admin_task_panel')
     else:
-        return redirect('task:user_task_list')
+        return redirect('task:kanban_board')
 
 @user_passes_test(is_admin)
 def admin_task_panel(request):
@@ -60,8 +62,64 @@ def update_task_status(request, task_id):
 
 
 @login_required
-def task_detail(request, pk):
+def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=pk, assigned_to=request.user)
+    comments = task.comments.all().order_by('-created_at')
+
+    if request.method == 'POST':
+        status_form = TaskStatusForm(request.POST, instance=task)
+        comment_form = CommentForm(request.POST)
+
+        if 'status_update' in request.POST:
+            if status_form.is_valid():
+                status_form.save()
+                messages.success(request, "Görev durumu güncellendi.")
+                return redirect('task:task_detail', pk=task.pk)
+
+        if 'comment_submit' in request.POST:
+            if comment_form.is_valid():
+                new_comment = comment_form.save(commit=False)
+                new_comment.task = task
+                new_comment.user = request.user
+                new_comment.save()
+                messages.success(request, "Yorum eklendi.")
+                return redirect('task:task_detail', pk=task.pk)
+    else:
+        status_form = TaskStatusForm(instance=task)
+        comment_form = CommentForm()
+
+    return render(request, 'task/task_detail.html', {
+        'task': task,
+        'comments': comments,
+        'status_form': status_form,
+        'comment_form': comment_form
+    })
+
+# task/views.py
+
+
+@login_required
+def kanban_board(request):
+    """
+    Kullanıcının görevlerini status bilgisine göre gruplandırır ve Kanban Board'a yollar.
+    """
+    tasks = Task.objects.filter(assigned_to=request.user).distinct()
+
+    pending_tasks = tasks.filter(status='pending')
+    in_progress_tasks = tasks.filter(status='in_progress')
+    done_tasks = tasks.filter(status='done')
+
+    context = {
+        'pending_tasks': pending_tasks,
+        'in_progress_tasks': in_progress_tasks,
+        'done_tasks': done_tasks,
+    }
+    return render(request, 'task/kanban_board.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def admin_task_detail(request, pk):
+    task = get_object_or_404(Task, pk=pk)
     comments = task.comments.all().order_by('-created_at')
 
     if request.method == 'POST':
@@ -71,11 +129,11 @@ def task_detail(request, pk):
             new_comment.task = task
             new_comment.user = request.user
             new_comment.save()
-            return redirect('task:task_detail', pk=task.pk)
+            return redirect('task:admin_task_detail', pk=pk)
     else:
         form = CommentForm()
 
-    return render(request, 'task/task_detail.html', {
+    return render(request, 'task/admin_task_detail.html', {
         'task': task,
         'form': form,
         'comments': comments

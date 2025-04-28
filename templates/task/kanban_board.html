@@ -1,0 +1,57 @@
+<!-- templates/task/kanban_board.html -->
+
+{% extends "base.html" %}
+{% block body %}
+
+<h1 class="text-2xl font-bold mb-6">Kanban Board</h1>
+
+<div style="display: flex; gap: 20px;">
+    
+    <!-- Bekliyor -->
+    <div style="flex: 1;">
+        <h2>🫘 Bekliyor</h2>
+        {% for task in pending_tasks %}
+            <div style="background-color: #f3f4f6; margin: 10px 0; padding: 10px; border-radius: 8px;">
+                <a href="{% url 'task:task_detail' task.id %}" class="text-blue-700 hover:underline">
+                    {{ task.title }}
+                </a>
+                <small>Son Tarih: {{ task.due_date|date:"d.m.Y" }}</small>
+            </div>
+        {% empty %}
+            <p>Hiç görev yok.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Devam Ediyor -->
+    <div style="flex: 1;">
+        <h2>⛏️ Devam Ediyor</h2>
+        {% for task in in_progress_tasks %}
+            <div style="background-color: #e0f2fe; margin: 10px 0; padding: 10px; border-radius: 8px;">
+                <a href="{% url 'task:task_detail' task.id %}" class="text-blue-700 hover:underline">
+                    {{ task.title }}
+                </a>
+                <small>Son Tarih: {{ task.due_date|date:"d.m.Y" }}</small>
+            </div>
+        {% empty %}
+            <p>Hiç görev yok.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Tamamlandı -->
+    <div style="flex: 1;">
+        <h2>🌱 Tamamlandı</h2>
+        {% for task in done_tasks %}
+            <div style="background-color: #d1fae5; margin: 10px 0; padding: 10px; border-radius: 8px;">
+                <a href="{% url 'task:task_detail' task.id %}" class="text-blue-700 hover:underline">
+                    {{ task.title }}
+                </a>
+                <small>Son Tarih: {{ task.due_date|date:"d.m.Y" }}</small>
+            </div>
+        {% empty %}
+            <p>Hiç görev yok.</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
